@@ -35,9 +35,42 @@ public:
     int get_data();
     int show_data() const;
     int sort_data();
-    int addmatrix(Matrix&);
-    int MultiplyMatrix(Matrix&, Matrix&);
+    Matrix& addMatrix(const Matrix&);
+    int MultiplyMatrix(const Matrix&, const Matrix&);
 };
+
+int Matrix::free = 0;
+int* Matrix::data = new int[100];
+
+int main()
+{
+    Matrix matrixA(AROWS, ACOLS);
+    Matrix matrixA1(AROWS, ACOLS);
+    Matrix matrixB(BROWS, BCOLS);
+    Matrix matrixC(CROWS, CCOLS);
+
+    srand(time(NULL));
+
+    matrixA.get_data();
+    matrixA.show_data();
+
+    matrixA1.get_data();
+    matrixA1.show_data();
+
+    Matrix matrixD = matrixA.addMatrix(matrixA1);
+    matrixD.show_data();
+
+    matrixB.get_data();
+    matrixB.show_data();
+
+    matrixC.MultiplyMatrix(matrixA, matrixB);
+    matrixC.show_data();
+
+    matrixC.sort_data();
+    matrixC.show_data();
+
+    return 0;
+}
 
 int Matrix::get_data()
 {
@@ -85,22 +118,22 @@ int Matrix::sort_data()
     return 0;
 }
 
-int Matrix::addmatrix(Matrix& op)
+Matrix& Matrix::addMatrix(const Matrix& op)
 {
+    static Matrix tm(rows, cols);
     if (rows == op.get_rows() && cols == op.get_cols())
     {
         for (int i=0; i<rows; i++)
             for (int j=0; j<cols; j++)
-                data[start+i*cols+j] += op.data[op.get_start()+i*op.get_cols()+j];
+                tm.data[tm.get_start()+i*cols+j] = data[start+i*cols+j] + op.data[op.get_start()+i*op.get_cols()+j];
 
-        return 0;
+        return tm;
     }
 
     cout << "Failed to Add (Diff Size)" << endl;
-    return 1;
 }
 
-int Matrix::MultiplyMatrix(Matrix& m1, Matrix& m2)
+int Matrix::MultiplyMatrix(const Matrix& m1, const Matrix& m2)
 {
     int r1 = m1.get_rows();
     int c1 = m1.get_cols();
@@ -129,36 +162,4 @@ int Matrix::MultiplyMatrix(Matrix& m1, Matrix& m2)
     cout << "Failed to multiply two matrix." << endl;
 
     return 1;
-}
-
-int Matrix::free = 0;
-int* Matrix::data = new int[100];
-
-int main()
-{
-    Matrix matrixA(AROWS, ACOLS);
-    Matrix matrixA1(AROWS, ACOLS);
-    Matrix matrixB(BROWS, BCOLS);
-    Matrix matrixC(CROWS, CCOLS);
-
-    srand(time(NULL));
-
-    matrixA.get_data();
-    matrixA.show_data();
-
-    matrixA1.get_data();
-    matrixA1.show_data();
-    matrixA.addmatrix(matrixA1);
-    matrixA.show_data();
-
-    matrixB.get_data();
-    matrixB.show_data();
-
-    matrixC.MultiplyMatrix(matrixA, matrixB);
-    matrixC.show_data();
-
-    matrixC.sort_data();
-    matrixC.show_data();
-
-    return 0;
 }
