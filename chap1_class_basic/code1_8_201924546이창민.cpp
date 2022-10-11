@@ -20,9 +20,9 @@ private:
 public:
     friend Matrix;
     Term() : coef(0.0f), exp(0) {}
-    Term(int data) : exp(data) {}
-    int get_exp() const { return exp; }
-    void set_exp(int exp) { this->exp = exp; }
+    Term(int data) : coef(data) {}
+    float get_coef() const { return coef; }
+    void set_coef(float coef) { this->coef = coef; }
 };
 
 class Matrix
@@ -44,6 +44,8 @@ public:
         free = finish;
     }
 
+    ~Matrix () { delete [] TermElement; }
+    
     int get_rows() const { return rows; }
     int get_cols() const { return cols; }
     int get_start() const { return start; }
@@ -79,7 +81,6 @@ int main(void)
     matrixC.show_data();
 
     system("pause");
-
     return 0;
 }
 
@@ -90,7 +91,7 @@ int Matrix::get_data()
 
     for (int i = 0; i < r; i++)
         for (int j = 0; j < c; j++)
-            TermElement[start + i * c + j].set_exp(rand()%10);
+            TermElement[start + i * c + j].set_coef(rand()%10);
 
     return 0;
 }
@@ -103,8 +104,11 @@ int Matrix::show_data() const
     for (int i = 0; i < r; i++)
     {
         for (int j = 0; j < c; j++)
-            cout << TermElement[start + i * c + j].get_exp() << " ";
-        cout << endl;
+        {
+            cout << TermElement[start + i * c + j].get_coef() << "x**" << r*c - (i*c+j);
+            if (!(i == r-1 && j == c-1))
+                cout << " + ";
+        }
     }
 
     cout << endl;
@@ -116,12 +120,13 @@ int Matrix::sort_data()
     for (int i = start; i < finish - 1; i++)
     {
         for (int j = start; j < finish - 1; j++)
+
         {
-            if (TermElement[j].get_exp() > TermElement[j + 1].get_exp())
+            if (TermElement[j].get_coef() > TermElement[j + 1].get_coef())
             {
-                int temp = TermElement[j].get_exp();
-                TermElement[j].set_exp(TermElement[j + 1].get_exp());
-                TermElement[j + 1].set_exp(temp);
+                int temp = TermElement[j].get_coef();
+                TermElement[j].set_coef(TermElement[j + 1].get_coef());
+                TermElement[j + 1].set_coef(temp);
             }
         }
     }
@@ -136,7 +141,7 @@ Matrix &Matrix::addMatrix(const Matrix &op) const
     {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
-                TermElement[tm.get_start() + i * cols + j].set_exp(TermElement[start + i * cols + j].get_exp() + TermElement[op.get_start() + i * op.get_cols() + j].get_exp());
+                TermElement[tm.get_start() + i * cols + j].set_coef(TermElement[start + i * cols + j].get_coef() + TermElement[op.get_start() + i * op.get_cols() + j].get_coef());
 
         return tm;
     }
@@ -161,10 +166,10 @@ int Matrix::MultiplyMatrix(const Matrix &m1, const Matrix &m2)
         {
             for (int j = 0; j < c2; j++)
             {
-                TermElement[start + i * cols + j].set_exp(0);
+                TermElement[start + i * cols + j].set_coef(0);
                 for (int k = 0; k < c1; k++)
                 {
-                    TermElement[start + i * cols + j].set_exp(TermElement[start + i * cols + j].get_exp() + TermElement[s1 + i * c1 + k].get_exp() * TermElement[s2 + c2 * k + j].get_exp());
+                    TermElement[start + i * cols + j].set_coef(TermElement[start + i * cols + j].get_coef() + TermElement[s1 + i * c1 + k].get_coef() * TermElement[s2 + c2 * k + j].get_coef());
         
                 }
             }

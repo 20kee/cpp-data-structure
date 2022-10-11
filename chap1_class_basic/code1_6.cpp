@@ -21,7 +21,7 @@ public:
         data = new int[r*c];
     }
 
-    ~Matrix() { free(data); }
+    ~Matrix() { delete[] data; }
 
     int get_rows() const { return rows; }
     int get_cols() const { return cols; }
